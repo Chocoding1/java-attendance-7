@@ -15,7 +15,7 @@ public enum StartTimePerDayOfWeek {
     SUN(SUNDAY, LocalTime.of(10, 0)),
     ;
 
-    private final java.time.DayOfWeek dayOfWeek;
+    private final DayOfWeek dayOfWeek;
     private final LocalTime startTime;
 
     StartTimePerDayOfWeek(DayOfWeek dayOfWeek, LocalTime startTime) {

@@ -7,7 +7,6 @@ import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import org.assertj.core.api.ObjectEnumerableAssert;
 
 public class Crew {
 
@@ -43,9 +42,15 @@ public class Crew {
         return this.nickname.equals(nickname);
     }
 
+    public AttendanceStatus AttendanceStatusForDate(LocalDateTime localDateTime) {
+        return attendanceLog.get(localDateTime);
+    }
+
     private void validateDuplicate(LocalDateTime localDateTime) {
-        if (attendanceLog.containsKey(localDateTime)) {
-            throw new IllegalArgumentException("[ERROR] 이미 출석을 확인하였습니다. 필요한 경우 수정 기능을 이용해 주세요.");
+        for (LocalDateTime dateTime : attendanceLog.keySet()) {
+            if (dateTime.toLocalDate().equals(localDateTime.toLocalDate())) {
+                throw new IllegalArgumentException("[ERROR] 이미 출석을 확인하였습니다. 필요한 경우 수정 기능을 이용해 주세요.");
+            }
         }
     }
 

@@ -18,6 +18,8 @@ public class InputView {
             Q. 종료
             %n
             """;
+    public static final String READ_NICKNAME_NOTICE = "닉네임을 입력해 주세요.";
+    public static final String READ_ATTENDANCE_TIME_NOTICE = "등교 시간을 입력해 주세요.";
 
     public String readFunction() {
         List<String> now = getNowDateAndDayOfWeek();
@@ -32,5 +34,15 @@ public class InputView {
         String nowDate = now.format(formatter);
         String nowDayOfWeek = now.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.KOREA);
         return List.of(nowDate, nowDayOfWeek);
+    }
+
+    public String readNickname() {
+        System.out.println(READ_NICKNAME_NOTICE);
+        return Console.readLine();
+    }
+
+    public String readAttendanceTime() {
+        System.out.println(READ_ATTENDANCE_TIME_NOTICE);
+        return Console.readLine();
     }
 }

@@ -1,18 +1,18 @@
 package attendance.config;
 
-import attendance.controller.AttendanceController;
+import attendance.controller.MainController;
 import attendance.view.InputView;
 
 public class AppConfig {
 
-    private AttendanceController attendanceController;
+    private MainController mainController;
     private InputView inputView;
 
-    public AttendanceController attendanceController() {
-        if (attendanceController == null) {
-            attendanceController = new AttendanceController(inputView());
+    public MainController mainController() {
+        if (mainController == null) {
+            mainController = new MainController(inputView());
         }
-        return attendanceController;
+        return mainController;
     }
 
     private InputView inputView() {

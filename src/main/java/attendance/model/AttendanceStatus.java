@@ -11,4 +11,8 @@ public enum AttendanceStatus {
     AttendanceStatus(String name) {
         this.name = name;
     }
+
+    public String getName() {
+        return name;
+    }
 }

@@ -18,6 +18,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.Locale;
+import java.util.Map;
 
 public class AttendanceController {
 
@@ -41,6 +42,10 @@ public class AttendanceController {
 
         if (function.equals("2")) {
             updateAttendance(crews);
+        }
+
+        if (function.equals("3")) {
+            findAttendanceLog(crews);
         }
     }
 
@@ -88,6 +93,14 @@ public class AttendanceController {
         AttendanceStatus oldAttendanceStatus = crew.findAttendanceStatus(oldLocalDateTime);
         crew.updateAttendance(oldLocalDateTime, updateDateTime);
         outputView.printUpdateLog(crew, oldLocalDateTime, oldAttendanceStatus, updateDateTime);
+    }
+
+    private void findAttendanceLog(Crews crews) {
+        String nickname = inputView.readNickname();
+        Crew crew = attendanceService.findCrew(nickname);
+        Map<LocalDateTime, AttendanceStatus> everydayAttendanceLog = crew.everydayAttendanceLog(
+                DateTimes.now());
+        outputView.printEveryAttendanceLog(crew, everydayAttendanceLog);
     }
 
     private void checkFutureDate(LocalDate localDate) {

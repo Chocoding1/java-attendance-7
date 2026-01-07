@@ -13,10 +13,33 @@ public class Crew {
 
     private final String nickname;
     private Map<LocalDateTime, AttendanceStatus> attendanceLog;
+    private int attendanceCount = 0;
+    private int lateCount = 0;
+    private int absenceCount = 0;
 
     public Crew(String nickname) {
         this.nickname = nickname;
         this.attendanceLog = new HashMap<>();
+    }
+
+    public String getNickname() {
+        return nickname;
+    }
+
+    public int getAttendanceCount() {
+        return attendanceCount;
+    }
+
+    public int getLateCount() {
+        return lateCount;
+    }
+
+    public int getAbsenceCount() {
+        return absenceCount;
+    }
+
+    public DismissalStatus dismissalStatus() {
+        return DismissalStatus.from(absenceCount + lateCount / 3);
     }
 
     public void logAttendance(LocalDateTime localDateTime) {
@@ -65,6 +88,64 @@ public class Crew {
         logAttendance(updateDateTime);
     }
 
+    public Map<LocalDateTime, AttendanceStatus> everydayAttendanceLog(LocalDateTime now) {
+        LocalDate nowDate = now.toLocalDate();
+        LocalDate firstDate = now.withDayOfMonth(1).toLocalDate();
+        Map<LocalDateTime, AttendanceStatus> everydayAttendanceLog = new HashMap<>();
+        while (firstDate.isBefore(nowDate)) {
+            if (isHoliday(firstDate)) {
+                firstDate = firstDate.plusDays(1);
+                continue;
+            }
+            if (isLoggedDate(firstDate)) {
+                LocalDateTime attendanceDateTime = getAttendanceDateTime(firstDate);
+                everydayAttendanceLog.put(attendanceDateTime, attendanceLog.get(attendanceDateTime));
+                firstDate = firstDate.plusDays(1);
+                addAttendanceStatusCount(attendanceLog.get(attendanceDateTime));
+                continue;
+            }
+            everydayAttendanceLog.put(LocalDateTime.of(firstDate, LocalTime.of(0, 0)), AttendanceStatus.ABSENCE);
+            firstDate = firstDate.plusDays(1);
+            absenceCount++;
+        }
+        return everydayAttendanceLog;
+    }
+
+    private boolean isHoliday(LocalDate localDate) {
+        return localDate.getDayOfWeek() == DayOfWeek.SATURDAY || localDate.getDayOfWeek() == DayOfWeek.SUNDAY
+                || Holiday.isHoliday(localDate);
+    }
+
+    private void addAttendanceStatusCount(AttendanceStatus attendanceStatus) {
+        if (attendanceStatus.equals(AttendanceStatus.ATTENDANCE)) {
+            attendanceCount++;
+        }
+        if (attendanceStatus.equals(AttendanceStatus.LATE)) {
+            lateCount++;
+        }
+        if (attendanceStatus.equals(AttendanceStatus.ABSENCE) || attendanceStatus.equals(AttendanceStatus.LATE_ABSENCE)) {
+            absenceCount++;
+        }
+    }
+
+    private boolean isLoggedDate(LocalDate localdate) {
+        for (LocalDateTime localDateTime : attendanceLog.keySet()) {
+            if (localDateTime.toLocalDate().equals(localdate)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private LocalDateTime getAttendanceDateTime(LocalDate firstDate) {
+        for (LocalDateTime localDateTime : attendanceLog.keySet()) {
+            if (localDateTime.toLocalDate().equals(firstDate)) {
+                return localDateTime;
+            }
+        }
+        throw new IllegalArgumentException("[ERROR] 기록되지 않은 날짜입니다.");
+    }
+
     private void validateDuplicate(LocalDateTime localDateTime) {
         for (LocalDateTime loggedDateTime : attendanceLog.keySet()) {
             if (loggedDateTime.toLocalDate().equals(localDateTime.toLocalDate())) {
@@ -87,7 +168,7 @@ public class Crew {
         Duration between = Duration.between(startTime, attendanceTime);
         long minutes = between.toMinutes();
         if (minutes > 30) {
-            return AttendanceStatus.ABSENCE;
+            return AttendanceStatus.LATE_ABSENCE;
         }
         if (minutes > 5) {
             return AttendanceStatus.LATE;

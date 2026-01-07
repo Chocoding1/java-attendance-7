@@ -18,4 +18,18 @@ public class OutputView {
         AttendanceStatus attendanceStatus = crew.AttendanceStatusForDate(localDateTime);
         System.out.println(date + " " + dayOfWeek + " " + time + " (" + attendanceStatus.getName() + ")");
     }
+
+    public void printUpdateLog(Crew crew, LocalDateTime oldLocalDateTime, AttendanceStatus oldAttendanceStatus, LocalDateTime updateDateTime) {
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MM월 dd일");
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+        String oldDate = oldLocalDateTime.toLocalDate().format(dateFormatter);
+        String oldTime = oldLocalDateTime.toLocalTime().format(timeFormatter);
+        String oldDayOfWeek = oldLocalDateTime.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.KOREAN);
+
+        String updateTime = updateDateTime.toLocalTime().format(timeFormatter);
+        AttendanceStatus updateAttendanceStatus = crew.AttendanceStatusForDate(updateDateTime);
+
+        System.out.println(oldDate + " " + oldDayOfWeek + " " + oldTime + " (" + oldAttendanceStatus.getName() + ") -> "
+                + updateTime + " (" + updateAttendanceStatus.getName() + ") 수정 완료!");
+    }
 }

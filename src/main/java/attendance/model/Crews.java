@@ -1,6 +1,5 @@
 package attendance.model;
 
-import java.util.IllformedLocaleException;
 import java.util.List;
 
 public class Crews {
@@ -17,6 +16,6 @@ public class Crews {
                 return crew;
             }
         }
-        throw new IllformedLocaleException("[ERROR] 등록되지 않은 닉네임입니다.");
+        throw new IllegalArgumentException("[ERROR] 등록되지 않은 닉네임입니다.");
     }
 }

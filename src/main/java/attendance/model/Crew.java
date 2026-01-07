@@ -2,6 +2,7 @@ package attendance.model;
 
 import java.time.DayOfWeek;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.HashMap;
@@ -46,9 +47,27 @@ public class Crew {
         return attendanceLog.get(localDateTime);
     }
 
+    public LocalTime findAttendanceTime(LocalDate updateDate) {
+        for (LocalDateTime loggedDateTime : attendanceLog.keySet()) {
+            if (loggedDateTime.toLocalDate().equals(updateDate)) {
+                return loggedDateTime.toLocalTime();
+            }
+        }
+        throw new IllegalArgumentException("[ERROR] 기록되지 않은 날짜입니다.");
+    }
+
+    public AttendanceStatus findAttendanceStatus(LocalDateTime localDateTime) {
+        return attendanceLog.get(localDateTime);
+    }
+
+    public void updateAttendance(LocalDateTime oldDateTime, LocalDateTime updateDateTime) {
+        attendanceLog.remove(oldDateTime);
+        logAttendance(updateDateTime);
+    }
+
     private void validateDuplicate(LocalDateTime localDateTime) {
-        for (LocalDateTime dateTime : attendanceLog.keySet()) {
-            if (dateTime.toLocalDate().equals(localDateTime.toLocalDate())) {
+        for (LocalDateTime loggedDateTime : attendanceLog.keySet()) {
+            if (loggedDateTime.toLocalDate().equals(localDateTime.toLocalDate())) {
                 throw new IllegalArgumentException("[ERROR] 이미 출석을 확인하였습니다. 필요한 경우 수정 기능을 이용해 주세요.");
             }
         }
